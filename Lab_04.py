@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from numpy import linspace, polyfit, poly1d, array
+from numpy import linspace, polyfit, poly1d, array, arange
 from math import pi, cos
 from scipy.interpolate import interp1d
 # 1 #
@@ -25,42 +25,51 @@ y = lagrange_interpolation(z, [(2*(x*x)-2) for x in z])
 # plt.show()
 
 # 2 #
+f = lambda x: 1/(25*x**2 +1)
 start = -2
 end = 2
 n = 21
+x = arange(-2,2,0.05)
 
-w_rownoodlegle = linspace(start, end, 21)
-w_czebyszewa   = array([(start+end)/2 + (end - start)/2 *cos(pi*(2*k+1)/(2*n)) for k in range(1, n)])
-f = lambda x: 1/(25*x**2 +1)
+rownoodlegle_X = linspace(start, end, n)
+czebyszew_X   = array([(start + end) / 2 + (end - start) / 2 * cos(pi * (2 * k + 1) / (2 * n)) for k in range(1, n)])
+
+wielomian_rownoodlegle = poly1d(polyfit(rownoodlegle_X, f(rownoodlegle_X), deg=(n - 1)))
+wielomian_czebyszew  = poly1d(polyfit(czebyszew_X, f(czebyszew_X), deg=(n - 1)))
+
+rownoodlegle_Y_wiel = wielomian_rownoodlegle(x)
+czebyszew_Y_wiel = wielomian_czebyszew(x)
+
+spline_rownoodlegle = interp1d(rownoodlegle_X, f(rownoodlegle_X), 3, fill_value='extrapolate')
+spline_czebyszew  = interp1d(czebyszew_X, f(czebyszew_X), 3, fill_value='extrapolate')
+
+rownoodlegle_Y_spline = spline_rownoodlegle(x)
+czebyszew_Y_spline = spline_czebyszew(x)
 
 
-wielom_rowno = poly1d(polyfit(w_rownoodlegle, f(w_rownoodlegle), deg=n-1))
-wielom_czeb  = poly1d(polyfit(w_czebyszewa, f(w_czebyszewa), deg=n-1))
-
-sklej_rowno = interp1d(w_rownoodlegle, f(w_rownoodlegle), kind=3)
-sklej_czeb  = interp1d(w_czebyszewa, f(w_czebyszewa), kind=3)
-
-plt.plot(w_rownoodlegle, wielom_rowno(w_rownoodlegle), label='Węzły Rownoodległe')
-plt.plot(w_czebyszewa, wielom_czeb(w_czebyszewa), label='Węzły Czebyczewa')
-plt.scatter(w_rownoodlegle, wielom_rowno(w_rownoodlegle))
-plt.scatter(w_czebyszewa, wielom_czeb(w_czebyszewa))
+plt.plot(x, rownoodlegle_Y_wiel, label='Węzły Rownoodległe')
+plt.plot(x, czebyszew_Y_wiel, label='Węzły Czebyczewa')
+plt.scatter(rownoodlegle_X, wielomian_rownoodlegle(rownoodlegle_X))
+plt.scatter(czebyszew_X, wielomian_czebyszew(czebyszew_X))
 plt.title('Wykres wykonany przy pomocy interpolacji wielomianowej:')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.legend()
+plt.ylim(-0.5,1.5)
+plt.figure(figsize=(15,10))
 plt.show()
 
-plt.plot(w_rownoodlegle, sklej_rowno(w_rownoodlegle), label='Węzły Rownoodległe')
-plt.plot(w_czebyszewa, sklej_czeb(w_czebyszewa), label='Węzły Czebyczewa')
-plt.scatter(w_rownoodlegle, sklej_rowno(w_rownoodlegle))
-plt.scatter(w_czebyszewa, sklej_czeb(w_czebyszewa))
+plt.plot(x, rownoodlegle_Y_spline, label='Węzły Rownoodległe')
+plt.plot(x, czebyszew_Y_spline, label='Węzły Czebyczewa')
+plt.scatter(rownoodlegle_X, wielomian_rownoodlegle(rownoodlegle_X))
+plt.scatter(czebyszew_X, wielomian_czebyszew(czebyszew_X))
 plt.title('Wykres wykonany przy pomocy interpolacji funkcjiami sklejanymi:')
 plt.xlabel('x')
 plt.ylabel('y')
 plt.legend()
 plt.show()
 
-3 #
+# 3 #
 
 napiecie = [x for x in range(-10, 11)]
 predkosc = [-9.1, -8.82, -7.99, -7.1, -6.32, -5.33, -4.73, -3.65, -2.53, -1.28, 0.0, 1.26, 2.49, 3.61, 4.61, 5.51, 6.32, 7.1, 7.81, 8.45, 9.02]
