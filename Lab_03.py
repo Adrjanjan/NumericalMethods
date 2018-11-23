@@ -1,8 +1,5 @@
-import matplotlib.pyplot as plt
 from numpy import linspace
 from math import exp, fabs
-from scipy.optimize import bisect, newton
-import time
 
 def f(x):
     return exp(-2*x)+x*x-1
@@ -96,6 +93,7 @@ def siecznych(function, a, b, delta, max_iter, f_prime, f_bis):
         return [prev_x_1, 0]
 
     count = 0
+    cur_x = prev_x_1 - function(prev_x_1) / (function(prev_x_2) - function(prev_x_1)) * (prev_x_2 - prev_x_1)
 
     while (count < max_iter):
         count += 1
